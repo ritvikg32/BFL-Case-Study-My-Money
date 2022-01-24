@@ -1,0 +1,7 @@
+.heading-div{
+    display: flex;
+}
+.list-item{
+    margin-top: 30px;
+    display: flex;
+}

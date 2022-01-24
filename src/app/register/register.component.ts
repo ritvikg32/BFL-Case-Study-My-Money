@@ -20,6 +20,8 @@ export class RegisterComponent implements OnInit {
   ngOnInit(): void {}
 
   register(){
+    console.log('Users name is ' + this.name);
+    console.log('Users email is ' + this.email);
     if (
       this.authService.register(
         this.name,

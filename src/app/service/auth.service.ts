@@ -79,8 +79,12 @@ export class AuthService implements CanActivate {
 
   getUserName(): string | null {
     if(this.isAuthenticated())
-      return this.user!.name;
-    
+      return this.currentUser!.name;
+    else
     return null;
+  }
+
+  logout(){
+    this.currentUser = null;
   }
 }

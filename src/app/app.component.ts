@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
     if(this.isAuthenticated()){
       return this.authService.getUserName();
     }
-
+    else
     return "null"
   }
 
@@ -34,6 +34,11 @@ export class AppComponent implements OnInit {
 
   isAuthenticated() {
     return this.authService.isAuthenticated();
+  }
+
+  logout(){
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   

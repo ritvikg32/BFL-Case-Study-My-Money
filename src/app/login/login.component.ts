@@ -17,17 +17,17 @@ export class LoginComponent implements OnInit {
   password = ""
 
 
-  loginBtn = document.getElementById('login-btn') as HTMLInputElement;
+  // loginBtn = document.getElementById('login-btn') as HTMLInputElement;
 
 
-  manageBtn(){
-    this.isEmailInvalid = this.userEmails.get('email')!.invalid && this.userEmails.get('email')!.touched
+  // manageBtn(){
+  //   this.isEmailInvalid = this.userEmails.get('email')!.invalid && this.userEmails.get('email')!.touched
 
-    this.isPwdInvalid = this.userEmails.get('password')!.invalid && this.userEmails.get('password')!.touched
+  //   this.isPwdInvalid = this.userEmails.get('password')!.invalid && this.userEmails.get('password')!.touched
 
-    this.loginBtn!.disabled = this.isEmailInvalid || this.isPwdInvalid
-    this.loginBtn!.disabled = true
-  }
+  //   this.loginBtn!.disabled = this.isEmailInvalid || this.isPwdInvalid
+  //   this.loginBtn!.disabled = true
+  // }
 
 
 

@@ -1,1 +1,24 @@
-<p>khata works!</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Khata</title>
+</head>
+<body>
+    <h3 class="container">My Khata</h3>
+    <div class="heading-div | container">
+        
+
+        <button class="btn btn-primary" style="float: right;" (click)="addNewContact()">Add New Contact</button>
+        <button class="btn btn-success" style="margin-left: 15px;">Add New Transaction</button>
+    </div>
+
+    <div class="list-item" *ngFor="let item of allTransactions">
+        <p>{{item.user.name}}</p>
+        <p style="float: right;">x</p>
+        <p style="float: right;">y</p>
+    </div>
+</body>
+</html>
