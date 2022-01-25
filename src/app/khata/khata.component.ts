@@ -17,18 +17,19 @@ export class KhataComponent implements OnInit {
   allTransactions: Transaction[] = [];
   allContacts: Contact[] = [];
   newContact: Contact = new Contact('', '', '');
-  newTransaction:Transaction = new Transaction(this.newContact, '', 0, false, '');
+  newTransaction:Transaction = new Transaction(this.newContact.name, this.newContact.email, this.newContact.phoneNumber, '', 0, false, '');
   wantsNewContact = false;
   wantsNewTransaction = false;
   viewTransactionForm = false;
   query: string = '';
+  viewTransEditForm = false;
 
-  constructor(private transactionService: TransactionService) {
-  }
-  onContactSavedSuccess(code: number, msg: string) {
+  constructor(private transactionService: TransactionService) {}
+
+  onContactSavedSuccess(code: number, msg: string){
     console.log(msg);
   }
-  onContactSaveFailed(code: number, msg: string) {
+  onContactSaveFailed(code: number, msg: string){
     console.log(msg);
   }
 
@@ -39,13 +40,15 @@ export class KhataComponent implements OnInit {
   initTransactions() {
     this.transactionService.getTransactionsLocal();
     this.allTransactions = this.transactionService.getAllTransactions();
-    console.log(this.allTransactions)
+    console.log('initTransactions'+this.allTransactions)
   }
 
 
   selectContact(contact:Contact){
     this.newContact = contact
-    this.newTransaction.user = contact
+    this.newTransaction.name = contact.name
+    this.newTransaction.email = contact.email
+    this.newTransaction.phoneNumber = contact.phoneNumber
     this.viewTransactionForm = true;
     this.wantsNewContact = false;
     this.wantsNewTransaction = false;
@@ -55,7 +58,43 @@ export class KhataComponent implements OnInit {
     this.viewTransactionForm = false;
     this.wantsNewContact = false;
     this.wantsNewTransaction = false;
-    this.transactionService.storeTransaction(this.newTransaction)
+    
+    if(!this.viewTransEditForm){
+      this.allTransactions.push(this.newTransaction)
+      this.transactionService.storeTransaction(this.newTransaction);
+    }
+    else{
+      this.viewTransEditForm=false
+      this.editTransaction(this.newTransaction)
+      this.transactionService.overrideTransactions(this.allTransactions)
+    }
+
+    
+  }
+
+  deleteTransaction(toDeleteTransaction:Transaction){
+    let index = this.allTransactions.indexOf(toDeleteTransaction)
+
+    if(index !== -1) {
+      this.allTransactions.splice(index, 1);
+    }
+
+    this.transactionService.overrideTransactions(this.allTransactions);
+  }
+
+  replaceTransaction(toReplace:Transaction){
+    let index = this.allTransactions.indexOf(toReplace);
+
+    
+  }
+
+  editTransaction(toEditTransaction:Transaction){
+    this.viewTransEditForm = true;
+    this.newContact.name = toEditTransaction.name;
+    this.newContact.email = toEditTransaction.email;
+    this.newContact.phoneNumber = toEditTransaction.phoneNumber;
+    this.newTransaction = toEditTransaction;
+    this.viewTransactionForm = true;
   }
 
   userEmails = new FormGroup({

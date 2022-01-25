@@ -16,12 +16,8 @@
         <button class="btn btn-success" style="margin-left: 15px;" (click)="updateContacts(); wantsNewTransaction=true; wantsNewContact=false" >Add New Transaction</button>
     </div>
 
-    <div class="contact-list" *ngFor="let item of allTransactions">
-        <p>Object</p>
-        <p>{{item.user.name}}</p>
-        <p style="float: right;">{{item.willGet ? "You will get" : "You will give" }}</p>
-        <p style="float: right;">{{item.amount}}</p>
-    </div>
+
+    
 
     <div class="new-contact | container" *ngIf="wantsNewContact">
         <form [formGroup]="userEmails">
@@ -31,7 +27,7 @@
             [(ngModel)]="newContact.name" formControlName="name">
         
             <label for="phone">Phone No.</label>
-            <input type="text" class="form-control" placeholder="Enter your mobile number" id="phone" name="phone" id="phone" [(ngModel)]="newContact.phoneNumber" formControlName="phoneNumber"
+            <input type="number" class="form-control" placeholder="Enter your mobile number" id="phone" name="phone" id="phone" [(ngModel)]="newContact.phoneNumber" formControlName="phoneNumber"
                 maxlength="10">
         
             <label for="email-field">Email</label>
@@ -70,8 +66,20 @@
         <input type="date" class="form-control" placeholder="Select date" [(ngModel)]="newTransaction.date">
 
         <input type="button" class="btn btn-danger" name="transaction_type" value="You will give" (click)="newTransaction.willGet=false; createTransaction()">
-        <input type="button" class="btn btn-success" name="transaction_type" value="You will get" style="margin-left: 15px;" (click)="newTransaction.willGet=true; createTransaction()">
+        <input type="button" class="btn btn-success" name="transaction_type" value="You will get" style="margin-left: 15px;" (click)="newTransaction.willGet=true; 
+        createTransaction()">
         
+    </div>
+
+
+    <div class="contact-list | container" *ngFor="let item of allTransactions">
+        <p>{{item.name}}</p>
+        <p>{{item.msg}}</p>
+        <p style="float: right;">{{item.willGet ? "You will get" : "You will give" }}</p>
+        <p style="float: right;">{{item.amount}}</p>
+
+        <button class="btn btn-danger" (click)="deleteTransaction(item)">Delete</button>
+        <button class="btn btn-warning" (click)="editTransaction(item)">Edit</button>
     </div>
 
     

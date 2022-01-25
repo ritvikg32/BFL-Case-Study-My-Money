@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './service/auth.service';
+import { TransactionService } from './service/transaction.service';
 
 
 @Component({
@@ -12,7 +13,7 @@ export class AppComponent implements OnInit {
   title = 'my-money';
   userName:string|null = ""
 
-  constructor(private router: Router, private authService: AuthService){
+  constructor(private router: Router, private authService: AuthService, private transactionService: TransactionService){
     this.setUserName()
   }
 
@@ -38,6 +39,7 @@ export class AppComponent implements OnInit {
 
   logout(){
     this.authService.logout();
+    this.transactionService.logout();
     this.router.navigate(['/login']);
   }
 
