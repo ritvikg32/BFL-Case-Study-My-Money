@@ -24,7 +24,6 @@ export class KhataComponent implements OnInit {
   query: string = '';
 
   constructor(private transactionService: TransactionService) {
-    this.initTransactions();
   }
   onContactSavedSuccess(code: number, msg: string) {
     console.log(msg);
@@ -33,10 +32,14 @@ export class KhataComponent implements OnInit {
     console.log(msg);
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.initTransactions();
+  }
 
   initTransactions() {
+    this.transactionService.getTransactionsLocal();
     this.allTransactions = this.transactionService.getAllTransactions();
+    console.log(this.allTransactions)
   }
 
 
