@@ -5,14 +5,55 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Khata</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
 </head>
 <body>
     <h3 class="container">My Khata</h3>
     <div class="heading-div | container">
         
 
-        <button class="btn btn-primary" style="float: right;" (click)="addNewContact()">Add New Contact</button>
-        <button class="btn btn-success" style="margin-left: 15px;">Add New Transaction</button>
+        <button class="btn btn-primary"  data-toggle="modal" data-target="#exampleModalCenter" (click)="openContactForm()">Add New Contact</button>
+        <button class="btn btn-success" style="margin-left: 15px;" (click)="updateContacts(); wantsNewTransaction=true">Add New Transaction</button>
+    </div>
+
+    <div class="new-contact | container" *ngIf="wantsNewContact">
+        <form [formGroup]="userEmails">
+        
+            <label for="name">Full Name</label>
+            <input type="text" class="form-control" placeholder="Enter your name" name="name" id="name" 
+            [(ngModel)]="newContact.name" formControlName="name">
+        
+            <label for="phone">Phone No.</label>
+            <input type="text" class="form-control" placeholder="Enter your mobile number" id="phone" name="phone" id="phone" [(ngModel)]="newContact.phoneNumber" formControlName="phoneNumber"
+                maxlength="10">
+        
+            <label for="email-field">Email</label>
+            <input type="email" class="form-control" formControlName="email" id="email" name="email"
+                placeholder="Enter your email" [(ngModel)]="newContact.email">
+        
+            
+            <input type="submit" class="btn btn-primary" value="Add Contact" id=submit-btn name="submit-btn"
+            style="margin-top:20px" (click)="addNewContact()">
+            <input type="cancel" class="btn btn-danger" value="Cancel" id=cancel-btn name="cancel-btn"
+            style="margin-top:20px; margin-left: 15px;" (click)="wantsNewContact=false">
+        
+        </form>
+    </div>
+
+    <div class="container" *ngIf="wantsNewTransaction">
+
+        <div style="display: flex">
+            <input type="text" class="form-control" placeholder="Search contact" [(ngModel)]="query">
+            <button type="button" class="btn btn-danger" (click)="wantsNewTransaction=false">Cancel</button>
+        </div>
+        
+
+        <div *ngFor="let contact of allContacts | search: query" class="contact-list">
+            <p>{{contact.name}}</p>
+            <p>{{contact.email}}</p>
+            <p>{{contact.phoneNumber}}</p>
+            <button type="button" class="btn btn-success">Select</button>
+        </div>
     </div>
 
     <div class="list-item" *ngFor="let item of allTransactions">
@@ -20,5 +61,7 @@
         <p style="float: right;">x</p>
         <p style="float: right;">y</p>
     </div>
+
+    
 </body>
 </html>

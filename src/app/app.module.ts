@@ -9,6 +9,7 @@ import { RegisterComponent } from './register/register.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { KhataComponent } from './khata/khata.component';
 import { FinanceComponent } from './finance/finance.component';
+import { SearchPipe } from './pipe/search.pipe';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { FinanceComponent } from './finance/finance.component';
     LoginComponent,
     RegisterComponent,
     KhataComponent,
-    FinanceComponent
+    FinanceComponent,
+    SearchPipe
   ],
   imports: [
     FormsModule,

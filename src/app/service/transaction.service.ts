@@ -9,7 +9,7 @@ import {Contact} from '../model/user'
 })
 export class TransactionService {
   allTransactions: Transaction[] = [];
-  allContacts: User[] = [];
+  allContacts: Contact[] = [];
   // actionCompleteListener: TransactionEventListener =
   //   {} as TransactionEventListener;
 
@@ -18,11 +18,15 @@ export class TransactionService {
   addNewTransaction() {}
 
   addNewContact(newContact: Contact) {
-    let userData = JSON.stringify(newContact);
+    this.getContactsLocal()
+
+    this.allContacts.push(newContact);
+    
+    let finalContactsStr = JSON.stringify(this.allContacts);
 
     localStorage.setItem(
-      this.authService.user?.email + '_' + newContact.email,
-      userData
+      this.authService.currentUser?.email!+'_contacts',
+      finalContactsStr
     );
 
     // this.actionCompleteListener.onContactSavedSuccess(
@@ -31,11 +35,22 @@ export class TransactionService {
     // );
   }
 
+  getContactsLocal(){
+    let contactsStr = localStorage.getItem(
+      this.authService.currentUser?.email! + '_contacts'
+    );
+    if(contactsStr!==null)
+      this.allContacts = JSON.parse(contactsStr);
+    
+      console.log(this.authService.currentUser?.email!);
+      console.log(this.allContacts)
+  }
+
   getAllTransactions(): Transaction[] {
     return this.allTransactions;
   }
 
-  getAllContacts(): User[] {
+  getAllContacts(): Contact[] {
     return this.allContacts;
   }
 }

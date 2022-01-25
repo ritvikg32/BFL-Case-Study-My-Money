@@ -5,3 +5,12 @@
     margin-top: 30px;
     display: flex;
 }
+.contact-list{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    background-color: #DCDCDC;
+    border-radius: 10px;
+    align-items: center;
+    padding: 10px;
+}
