@@ -17,8 +17,10 @@ export class KhataComponent implements OnInit {
   allTransactions: Transaction[] = [];
   allContacts: Contact[] = [];
   newContact: Contact = new Contact('', '', '');
+  newTransaction:Transaction = new Transaction(this.newContact, '', 0, false, '');
   wantsNewContact = false;
   wantsNewTransaction = false;
+  viewTransactionForm = false;
   query: string = '';
 
   constructor(private transactionService: TransactionService) {
@@ -35,6 +37,22 @@ export class KhataComponent implements OnInit {
 
   initTransactions() {
     this.allTransactions = this.transactionService.getAllTransactions();
+  }
+
+
+  selectContact(contact:Contact){
+    this.newContact = contact
+    this.newTransaction.user = contact
+    this.viewTransactionForm = true;
+    this.wantsNewContact = false;
+    this.wantsNewTransaction = false;
+  }
+
+  createTransaction(){
+    this.viewTransactionForm = false;
+    this.wantsNewContact = false;
+    this.wantsNewTransaction = false;
+    this.transactionService.storeTransaction(this.newTransaction)
   }
 
   userEmails = new FormGroup({
