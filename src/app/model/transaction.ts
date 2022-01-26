@@ -11,3 +11,12 @@ export class Transaction {
     public msg: string
   ) {}
 }
+
+export class TransactionByGroup {
+  constructor(
+    public name: string,
+    public willGet: boolean,
+    public netAmount: number,
+    public allTransactions: Transaction[]
+  ) {}
+}

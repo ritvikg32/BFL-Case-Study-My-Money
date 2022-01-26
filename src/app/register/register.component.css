@@ -1,8 +1,12 @@
+body{
+    justify-content: center;
+    align-items: center;
+        display: flex;
+    flex-direction: column;
+}
 .container-div{
     justify-content: center;
     align-items: center;
-    display: flex;
-    flex-direction: column;
 }
 .login-container{
     border-width: 2px;

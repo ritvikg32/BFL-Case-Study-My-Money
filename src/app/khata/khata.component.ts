@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Transaction } from '../model/transaction';
+import { Transaction, TransactionByGroup } from '../model/transaction';
 import { TransactionService } from '../service/transaction.service';
 import { User } from "../model/user";
 import { Contact } from "../model/user";
 import { Validators } from '@angular/forms';
 import { FormGroup, FormControl } from '@angular/forms';
+import { groupBy } from 'rxjs';
 // import {TransactionEventListener} from '../interface/ActionCompleteListener'
 
 
@@ -15,9 +16,20 @@ import { FormGroup, FormControl } from '@angular/forms';
 })
 export class KhataComponent implements OnInit {
   allTransactions: Transaction[] = [];
+  allTransactionsGroup: TransactionByGroup[] = [];
   allContacts: Contact[] = [];
+  userTransactions:Transaction[] = [];
   newContact: Contact = new Contact('', '', '');
-  newTransaction:Transaction = new Transaction(this.newContact.name, this.newContact.email, this.newContact.phoneNumber, '', 0, false, '');
+  isTransSelected = false;
+  newTransaction: Transaction = new Transaction(
+    this.newContact.name,
+    this.newContact.email,
+    this.newContact.phoneNumber,
+    '',
+    0,
+    false,
+    ''
+  );
   wantsNewContact = false;
   wantsNewTransaction = false;
   viewTransactionForm = false;
@@ -26,10 +38,10 @@ export class KhataComponent implements OnInit {
 
   constructor(private transactionService: TransactionService) {}
 
-  onContactSavedSuccess(code: number, msg: string){
+  onContactSavedSuccess(code: number, msg: string) {
     console.log(msg);
   }
-  onContactSaveFailed(code: number, msg: string){
+  onContactSaveFailed(code: number, msg: string) {
     console.log(msg);
   }
 
@@ -40,55 +52,65 @@ export class KhataComponent implements OnInit {
   initTransactions() {
     this.transactionService.getTransactionsLocal();
     this.allTransactions = this.transactionService.getAllTransactions();
-    console.log('initTransactions'+this.allTransactions)
+    this.getTransactionsGroup();
+    console.log('initTransactions' + this.allTransactions);
   }
 
+  getTransactionsGroup() {
+    this.transactionService.getTransactionsGroup();
+    this.allTransactionsGroup = this.transactionService.getGroupedTransactions();
+  }
 
-  selectContact(contact:Contact){
-    this.newContact = contact
-    this.newTransaction.name = contact.name
-    this.newTransaction.email = contact.email
-    this.newTransaction.phoneNumber = contact.phoneNumber
+  toggleTransactionDetail(item: TransactionByGroup | null) {
+    this.isTransSelected = !this.isTransSelected;
+    if(item!==null){
+      this.userTransactions = item.allTransactions
+      console.log('item transactions are:' + JSON.stringify(item.allTransactions))
+    }
+    else{
+      this.initTransactions();
+    }
+  }
+
+  selectContact(contact: Contact) {
+    this.newContact = contact;
+    this.newTransaction.name = contact.name;
+    this.newTransaction.email = contact.email;
+    this.newTransaction.phoneNumber = contact.phoneNumber;
     this.viewTransactionForm = true;
     this.wantsNewContact = false;
     this.wantsNewTransaction = false;
   }
 
-  createTransaction(){
+  createTransaction() {
     this.viewTransactionForm = false;
     this.wantsNewContact = false;
     this.wantsNewTransaction = false;
-    
-    if(!this.viewTransEditForm){
-      this.allTransactions.push(this.newTransaction)
-      this.transactionService.storeTransaction(this.newTransaction);
-    }
-    else{
-      this.viewTransEditForm=false
-      this.editTransaction(this.newTransaction)
-      this.transactionService.overrideTransactions(this.allTransactions)
-    }
 
-    
+    if (!this.viewTransEditForm) {
+      this.allTransactions.push(this.newTransaction);
+      this.transactionService.storeTransaction(this.newTransaction);
+      this.getTransactionsGroup()
+    } else {
+      this.viewTransEditForm = false;
+      this.viewTransactionForm = false;
+      this.editTransaction(this.newTransaction);
+      this.transactionService.overrideTransactions(this.allTransactions);
+    }
   }
 
-  deleteTransaction(toDeleteTransaction:Transaction){
-    let index = this.allTransactions.indexOf(toDeleteTransaction)
+  deleteTransaction(toDeleteTransaction: Transaction) {
+    let index = this.allTransactions.indexOf(toDeleteTransaction);
 
-    if(index !== -1) {
+    if (index !== -1) {
       this.allTransactions.splice(index, 1);
     }
 
     this.transactionService.overrideTransactions(this.allTransactions);
   }
 
-  replaceTransaction(toReplace:Transaction){
-    let index = this.allTransactions.indexOf(toReplace);
 
-    
-  }
-
-  editTransaction(toEditTransaction:Transaction){
+  editTransaction(toEditTransaction: Transaction) {
     this.viewTransEditForm = true;
     this.newContact.name = toEditTransaction.name;
     this.newContact.email = toEditTransaction.email;
@@ -112,9 +134,9 @@ export class KhataComponent implements OnInit {
     ]),
   });
 
-  updateContacts(){
-    this.transactionService.getContactsLocal()
-    this.allContacts = this.transactionService.getAllContacts()
+  updateContacts() {
+    this.transactionService.getContactsLocal();
+    this.allContacts = this.transactionService.getAllContacts();
   }
 
   openContactForm() {
@@ -132,6 +154,5 @@ export class KhataComponent implements OnInit {
       );
 
     console.log(JSON.stringify(this.newContact));
-    
   }
 }

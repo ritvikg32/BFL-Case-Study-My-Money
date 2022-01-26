@@ -11,15 +11,30 @@ import { Router } from '@angular/router';
 })
 export class RegisterComponent implements OnInit {
   name: string = '';
-  phoneNo: string='';
+  phoneNo: string = '';
   email: string = '';
   password: string = '';
+  invalidState = true;
 
   constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit(): void {}
 
-  register(){
+  ngOnChanges(){
+    let validationFailed =
+      this.userEmails.get('name')?.invalid ||
+      this.userEmails.get('email')?.invalid ||
+      this.userEmails.get('password')?.invalid;
+
+    if(validationFailed || validationFailed==undefined) {
+      this.invalidState = true;
+    }
+    else{
+      this.invalidState = false;
+    }
+  }
+
+  register() {
     console.log('Users name is ' + this.name);
     console.log('Users email is ' + this.email);
     if (
@@ -44,6 +59,14 @@ export class RegisterComponent implements OnInit {
     email: new FormControl('', [
       Validators.required,
       Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+    ]),
+    name: new FormControl('', [
+      Validators.required,
+      Validators.pattern('^[a-zA-Z ]+$'),
+    ]),
+    phoneNumber: new FormControl('', [
+      Validators.required,
+      Validators.pattern('^d+$'),
     ]),
     password: new FormControl('', [
       Validators.required,

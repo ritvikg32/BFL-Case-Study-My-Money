@@ -11,9 +11,9 @@
 </head>
 
 <body>
-
+    <h3 style="margin-top: 50px; align-self: center">MyMoney</h3>
     <div class="container-div">
-        <h3 style="margin-top: 50px;">MyMoney</h3>
+
 
         <div class="form-group | login-container">
 
@@ -23,15 +23,24 @@
                 <form [formGroup]="userEmails">
 
                     <label for="name">Full Name</label>
-                    <input type="text" class="form-control" placeholder="Enter your name" name="name" id="name" [(ngModel)]="name" 
-                    [ngModelOptions]="{standalone: true}" >
+                    <input type="text" class="form-control" placeholder="Enter your name" name="name" id="name"
+                        [(ngModel)]="name" formControlName="name">
+
 
                     <label for="phone">Phone No.</label>
-                    <input type="text" class="form-control" placeholder="Enter your mobile number" id="phone" name="phone" id="phone" maxlength="10" [(ngModel)] = "phoneNo">
+                    <input type="text" class="form-control" placeholder="Enter your mobile number" id="phone"
+                        name="phone" id="phone" maxlength="10" [(ngModel)]="phoneNo" formControlName="phoneNumber">
 
                     <label for="email-field">Email</label>
+
+
                     <input type="email" class="form-control" formControlName="email" id="email" name="email"
                         placeholder="Enter your email" [(ngModel)]="email">
+
+
+
+
+
 
 
 
@@ -45,7 +54,9 @@
 
 
             <input type="button" class="btn btn-primary" value="Register"
-                style="width: 75px; align-self:center; margin-top: 10px;" (click)="register()">
+                style="width: 75px; align-self:center; margin-top: 10px;" [disabled]="this.userEmails.get('name')?.invalid ||
+      this.userEmails.get('email')?.invalid ||
+      this.userEmails.get('password')?.invalid" (click)="register()">
 
 
             <div style="display:flex; align-self: center;">
@@ -53,17 +64,24 @@
                 <p style="color: blue; cursor: pointer;" (click)="goToLogin()">Click Here</p>
             </div>
         </div>
+
+        <div class="alert alert-danger" style="width: 350px;"
+            *ngIf="userEmails.get('name')?.invalid && userEmails.get('name')?.touched">
+            <strong>Invalid Name: </strong> Name should only contain letters
+        </div>
+        <div class="alert alert-danger" style="width: 350px;"
+            *ngIf="userEmails.get('email')?.invalid && userEmails.get('email')?.touched">
+            <strong>Invalid Email: </strong> Please enter valid email
+        </div>
+        <div class="alert alert-danger" style="width: 350px;"
+            *ngIf="userEmails.get('password')?.invalid && userEmails.get('password')?.touched">
+            <strong>Invalid Password: </strong> Password must contain at least one lowercase character, one Uppercase
+            character, one number and one special character
+        </div>
     </div>
 
-    <div class="alert alert-danger" style="width: 350px;"
-        *ngIf="userEmails.get('email')?.invalid && userEmails.get('email')?.touched">
-        <strong>Invalid Email: </strong> Please enter valid email
-    </div>
-    <div class="alert alert-danger" style="width: 350px;"
-        *ngIf="userEmails.get('password')?.invalid && userEmails.get('password')?.touched">
-        <strong>Invalid Password: </strong> Password must contain at least one lowercase character, one Uppercase
-        character, one number and one special character
-    </div>
+
+
 </body>
 
 </html>

@@ -14,6 +14,8 @@
 
         <button class="btn btn-primary"  data-toggle="modal" data-target="#exampleModalCenter" (click)="openContactForm(); wantsNewTransaction=false">Add New Contact</button>
         <button class="btn btn-success" style="margin-left: 15px;" (click)="updateContacts(); wantsNewTransaction=true; wantsNewContact=false" >Add New Transaction</button>
+
+        <button class="btn btn-secondary" *ngIf="isTransSelected" (click)="toggleTransactionDetail(null)" style="margin-left: 15px;">Back</button>
     </div>
 
 
@@ -25,6 +27,10 @@
             <label for="name">Full Name</label>
             <input type="text" class="form-control" placeholder="Enter your name" name="name" id="name" 
             [(ngModel)]="newContact.name" formControlName="name">
+            <div class="alert alert-danger" style="width: 350px;"
+                *ngIf="userEmails.get('name')?.invalid && userEmails.get('name')?.touched">
+                <strong>Invalid Name: </strong> Name should only contain letters
+            </div>
         
             <label for="phone">Phone No.</label>
             <input type="number" class="form-control" placeholder="Enter your mobile number" id="phone" name="phone" id="phone" [(ngModel)]="newContact.phoneNumber" formControlName="phoneNumber"
@@ -33,8 +39,11 @@
             <label for="email-field">Email</label>
             <input type="email" class="form-control" formControlName="email" id="email" name="email"
                 placeholder="Enter your email" [(ngModel)]="newContact.email">
-        
-            
+            <div class="alert alert-danger" style="width: 350px;"
+                *ngIf="userEmails.get('email')?.invalid && userEmails.get('email')?.touched">
+                <strong>Invalid Email: </strong> Please enter valid email
+            </div>
+
             <input type="submit" class="btn btn-primary" value="Add Contact" id=submit-btn name="submit-btn"
             style="margin-top:20px" (click)="addNewContact()">
             <input type="cancel" class="btn btn-danger" value="Cancel" id=cancel-btn name="cancel-btn"
@@ -65,16 +74,22 @@
         <input type="text" class="form-control" placeholder="Enter Description" [(ngModel)]="newTransaction.msg">
         <input type="date" class="form-control" placeholder="Select date" [(ngModel)]="newTransaction.date">
 
-        <input type="button" class="btn btn-danger" name="transaction_type" value="You will give" (click)="newTransaction.willGet=false; createTransaction()">
+        <input type="button" class="btn btn-danger" name="transaction_type" value="You will give" (click)="newTransaction.willGet=false; createTransaction();viewTransactionForm=false">
         <input type="button" class="btn btn-success" name="transaction_type" value="You will get" style="margin-left: 15px;" (click)="newTransaction.willGet=true; 
-        createTransaction()">
+        createTransaction();viewTransactionForm=false">
         
     </div>
 
 
-    <div class="contact-list | container" *ngFor="let item of allTransactions">
+    <div class="contact-list | container" *ngFor="let item of allTransactionsGroup" [hidden]="isTransSelected" (click)="toggleTransactionDetail(item)">
         <p>{{item.name}}</p>
-        <p>{{item.msg}}</p>
+        <p style="float: right;">{{item.willGet ? "You will get" : "You will give" }}</p>
+        <p style="float: right;">{{item.netAmount}}</p>
+    </div>
+    <div class="contact-list | container" *ngFor="let item of userTransactions" [hidden]="!isTransSelected" >
+        <p>{{item.name}}</p>
+        <p>{{item.date}}</p>
+        <p>{{item.msg}}
         <p style="float: right;">{{item.willGet ? "You will get" : "You will give" }}</p>
         <p style="float: right;">{{item.amount}}</p>
 

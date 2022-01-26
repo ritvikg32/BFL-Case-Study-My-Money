@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Transaction } from '../model/transaction';
+import { Transaction, TransactionByGroup } from '../model/transaction';
 import {AuthService} from './auth.service';
 import {Contact} from '../model/user'
 
@@ -9,6 +9,8 @@ import {Contact} from '../model/user'
 export class TransactionService {
   allTransactions: Transaction[] = [];
   allContacts: Contact[] = [];
+  transactionGroup:TransactionByGroup[] = [];
+  transactionsGroupObj = {};
   // actionCompleteListener: TransactionEventListener =
   //   {} as TransactionEventListener;
 
@@ -43,6 +45,57 @@ export class TransactionService {
 
     if (transactionsStr !== null)
       this.allTransactions = JSON.parse(transactionsStr);
+  }
+
+  getTransactionsGroup() {
+    this.transactionsGroupObj = this.allTransactions.reduce((acc: any, d) => {
+      if (Object.keys(acc).includes(d.name)) return acc;
+
+      acc[d.name] = this.allTransactions.filter(
+        (g: Transaction) => g.name === d.name
+      );
+      return acc;
+    }, {});
+
+    this.parseGroupData()
+
+  }
+
+  parseGroupData(){
+    var parsedGroupTrans: TransactionByGroup[] = [];
+    
+    var willGet = false
+    for( var [key, value] of Object.entries(this.transactionsGroupObj)){
+      var netAmount = 0;
+      // @ts-ignore
+      value.forEach(function (item:Transaction){
+        // @ts-ignore
+        if (item.willGet) {
+          // @ts-ignore
+          netAmount += item.amount;
+        } else {
+          // @ts-ignore
+          netAmount -= item.amount;
+        }
+      })
+      willGet = netAmount >= 0;
+      parsedGroupTrans.push(
+        new TransactionByGroup(
+          key,
+          willGet,
+          Math.abs(netAmount),
+          // @ts-ignore
+          value
+        )
+      );
+      this.transactionGroup = parsedGroupTrans
+      
+      
+    }
+  }
+
+  getGroupedTransactions(){
+    return this.transactionGroup
   }
 
   storeTransaction(transaction: Transaction) {

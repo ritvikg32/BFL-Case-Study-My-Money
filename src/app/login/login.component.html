@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,48 +9,56 @@
     <title>Login</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">s
 </head>
+
 <body>
-    
+
     <div class="container-div">
         <h3 style="margin-top: 50px;">MyMoney</h3>
 
         <div class="form-group | login-container">
-            
+
             <p style="align-self: center; margin-top: 30px;">Enter your credentials</p>
-            
+
             <div class="form-group | label-input">
                 <form [formGroup]="userEmails">
-                <label for="email-field">Email</label>
-                <input type="email" class="form-control" formControlName="email" id="email" name="email" placeholder="Enter your email" [(ngModel)]="email">
-            
+                    <label for="email-field">Email</label>
+                    <input type="email" class="form-control" formControlName="email" id="email" name="email"
+                        placeholder="Enter your email" [(ngModel)]="email">
 
-            
-                <label for="pwd-field">Password</label>
-                <input type="password" class="form-control" formControlName="password" id="pwd" name="pwd" placeholder="Enter your password" [(ngModel)]="password">
-            
-            
-                <input type="checkbox" id="remember-field" name="remember-field">
-                <label for="remember-field">Remember me</label>
+
+
+                    <label for="pwd-field">Password</label>
+                    <input type="password" class="form-control" formControlName="password" id="pwd" name="pwd"
+                        placeholder="Enter your password" [(ngModel)]="password">
+
+
+                    <input type="checkbox" id="remember-field" name="remember-field">
+                    <label for="remember-field">Remember me</label>
 
                 </form>
             </div>
-            
 
-                <input id="login-btn" type="button" class="btn btn-primary" value="Login" style="width: 75px; align-self:center; margin-top: 10px;" (click)="login()">
+
+            <input id="login-btn" type="button" class="btn btn-primary" value="Login"
+                style="width: 75px; align-self:center; margin-top: 10px;" [disabled]="this.userEmails.get('email')?.invalid || this.userEmails.get('password')?.invalid" (click)="login()">
 
 
             <div style="display:flex; align-self: center;">
-                <p >Don't have an account?</p>
+                <p>Don't have an account?</p>
                 <p style="color: blue; cursor: pointer;" (click)="goToRegister()">Click Here</p>
             </div>
         </div>
     </div>
 
-    <div class="alert alert-danger" style="width: 350px;" *ngIf="userEmails.get('email')?.invalid && userEmails.get('email')?.touched">
+    <div class="alert alert-danger" style="width: 350px;"
+        *ngIf="userEmails.get('email')?.invalid && userEmails.get('email')?.touched">
         <strong>Invalid Email: </strong> Please enter valid email
     </div>
-    <div class="alert alert-danger" style="width: 350px;" *ngIf="userEmails.get('password')?.invalid && userEmails.get('password')?.touched">
-        <strong>Invalid Password: </strong> Password must contain at least one lowercase character, one Uppercase character, one number and one special character
+    <div class="alert alert-danger" style="width: 350px;"
+        *ngIf="userEmails.get('password')?.invalid && userEmails.get('password')?.touched">
+        <strong>Invalid Password: </strong> Password must contain at least one lowercase character, one Uppercase
+        character, one number and one special character
     </div>
 </body>
+
 </html>
