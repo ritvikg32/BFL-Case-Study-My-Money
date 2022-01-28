@@ -35,8 +35,6 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-    console.log('Users name is ' + this.name);
-    console.log('Users email is ' + this.email);
     if (
       this.authService.register(
         this.name,
@@ -45,7 +43,7 @@ export class RegisterComponent implements OnInit {
         this.phoneNo
       )
     ) {
-      this.router.navigateByUrl('/login');
+      this.goToLogin()
     } else {
       alert('Something went wrong. Please try again');
     }

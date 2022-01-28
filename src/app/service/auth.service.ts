@@ -1,10 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   CanActivate,
   RouterStateSnapshot,
 } from '@angular/router';
-import { Observable } from 'rxjs';
 import { User } from '../model/user';
 import { Router } from '@angular/router';
 
@@ -14,6 +13,7 @@ import { Router } from '@angular/router';
 export class AuthService implements CanActivate {
   user: User | null = null;
   currentUser: User | null = null;
+  userUpdated = new EventEmitter();
 
   constructor(private router: Router) {}
   canActivate(
@@ -70,6 +70,7 @@ export class AuthService implements CanActivate {
       const userJSON = localStorage.getItem(email + '_data');
       if (userJSON !== null) {
         this.currentUser = JSON.parse(userJSON);
+        this.userUpdated.emit()
         return true;
       }
     }

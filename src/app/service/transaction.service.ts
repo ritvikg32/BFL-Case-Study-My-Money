@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { Transaction, TransactionByGroup } from '../model/transaction';
 import {AuthService} from './auth.service';
 import {Contact} from '../model/user'
@@ -9,8 +9,11 @@ import {Contact} from '../model/user'
 export class TransactionService {
   allTransactions: Transaction[] = [];
   allContacts: Contact[] = [];
-  transactionGroup:TransactionByGroup[] = [];
+  transactionGroup: TransactionByGroup[] = [];
   transactionsGroupObj = {};
+
+  allTransEmitter = new EventEmitter();
+  transGroupEmitter = new EventEmitter();
   // actionCompleteListener: TransactionEventListener =
   //   {} as TransactionEventListener;
 
@@ -57,18 +60,17 @@ export class TransactionService {
       return acc;
     }, {});
 
-    this.parseGroupData()
-
+    this.parseGroupData();
   }
 
-  parseGroupData(){
+  parseGroupData() {
     var parsedGroupTrans: TransactionByGroup[] = [];
-    
-    var willGet = false
-    for( var [key, value] of Object.entries(this.transactionsGroupObj)){
+
+    var willGet = false;
+    for (var [key, value] of Object.entries(this.transactionsGroupObj)) {
       var netAmount = 0;
       // @ts-ignore
-      value.forEach(function (item:Transaction){
+      value.forEach(function (item: Transaction) {
         // @ts-ignore
         if (item.willGet) {
           // @ts-ignore
@@ -77,7 +79,7 @@ export class TransactionService {
           // @ts-ignore
           netAmount -= item.amount;
         }
-      })
+      });
       willGet = netAmount >= 0;
       parsedGroupTrans.push(
         new TransactionByGroup(
@@ -88,26 +90,30 @@ export class TransactionService {
           value
         )
       );
-      this.transactionGroup = parsedGroupTrans
-      
-      
+      this.transactionGroup = parsedGroupTrans;
+      this.transGroupEmitter.emit(this.transactionGroup)
     }
   }
 
-  getGroupedTransactions(){
-    return this.transactionGroup
+  getGroupedTransactions() {
+    return this.transactionGroup;
   }
 
   storeTransaction(transaction: Transaction) {
     this.getTransactionsLocal();
+
     let key = this.authService.currentUser?.email! + '_trans';
 
     this.allTransactions.push(transaction);
+
+    this.allTransEmitter.emit(this.allTransactions)
 
     var finalTransStr = JSON.stringify(this.allTransactions);
 
     localStorage.setItem(key, finalTransStr);
     console.log('Final Transaction: ' + finalTransStr);
+
+    this.getTransactionsGroup()
   }
 
   overrideTransactions(value: any) {

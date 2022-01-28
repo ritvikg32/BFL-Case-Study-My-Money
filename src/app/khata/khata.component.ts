@@ -18,7 +18,7 @@ export class KhataComponent implements OnInit {
   allTransactions: Transaction[] = [];
   allTransactionsGroup: TransactionByGroup[] = [];
   allContacts: Contact[] = [];
-  userTransactions:Transaction[] = [];
+  userTransactions: Transaction[] = [];
   newContact: Contact = new Contact('', '', '');
   isTransSelected = false;
   newTransaction: Transaction = new Transaction(
@@ -38,6 +38,11 @@ export class KhataComponent implements OnInit {
 
   constructor(private transactionService: TransactionService) {}
 
+  trackQuestion(index: number) {
+    return index.toString();
+    // you can implement custom logic here using the question
+  }
+
   onContactSavedSuccess(code: number, msg: string) {
     console.log(msg);
   }
@@ -47,27 +52,43 @@ export class KhataComponent implements OnInit {
 
   ngOnInit(): void {
     this.initTransactions();
+    this.transactionService.allTransEmitter.subscribe(
+      (transactions: Transaction[]) => {
+        console.log('Callback received');
+        console.log('New Transactions array: ' + JSON.stringify(transactions));
+        this.userTransactions = transactions;
+      }
+    );
+
+    this.transactionService.transGroupEmitter.subscribe(
+      (transactions: TransactionByGroup[]) => {
+        this.allTransactionsGroup = transactions;
+      }
+    );
   }
+
+  
 
   initTransactions() {
     this.transactionService.getTransactionsLocal();
     this.allTransactions = this.transactionService.getAllTransactions();
     this.getTransactionsGroup();
-    console.log('initTransactions' + this.allTransactions);
   }
 
   getTransactionsGroup() {
     this.transactionService.getTransactionsGroup();
-    this.allTransactionsGroup = this.transactionService.getGroupedTransactions();
+    this.allTransactionsGroup =
+      this.transactionService.getGroupedTransactions();
   }
 
   toggleTransactionDetail(item: TransactionByGroup | null) {
     this.isTransSelected = !this.isTransSelected;
-    if(item!==null){
-      this.userTransactions = item.allTransactions
-      console.log('item transactions are:' + JSON.stringify(item.allTransactions))
-    }
-    else{
+    if (item !== null) {
+      this.userTransactions = item.allTransactions;
+      console.log(
+        'item transactions are:' + JSON.stringify(item.allTransactions)
+      );
+    } else {
       this.initTransactions();
     }
   }
@@ -87,16 +108,24 @@ export class KhataComponent implements OnInit {
     this.wantsNewContact = false;
     this.wantsNewTransaction = false;
 
+    console.log(
+      'before adding transaction' + JSON.stringify(this.allTransactions)
+    );
+
     if (!this.viewTransEditForm) {
-      this.allTransactions.push(this.newTransaction);
+      // this.allTransactions.push(this.newTransaction);
       this.transactionService.storeTransaction(this.newTransaction);
-      this.getTransactionsGroup()
+      // this.initTransactions()
     } else {
       this.viewTransEditForm = false;
       this.viewTransactionForm = false;
       this.editTransaction(this.newTransaction);
       this.transactionService.overrideTransactions(this.allTransactions);
     }
+
+    console.log(
+      'after adding transaction' + JSON.stringify(this.allTransactions)
+    );
   }
 
   deleteTransaction(toDeleteTransaction: Transaction) {
@@ -108,7 +137,6 @@ export class KhataComponent implements OnInit {
 
     this.transactionService.overrideTransactions(this.allTransactions);
   }
-
 
   editTransaction(toEditTransaction: Transaction) {
     this.viewTransEditForm = true;

@@ -1,5 +1,6 @@
 .heading-div{
     display: flex;
+    margin-top: 15px;
 }
 .list-item{
     margin-top: 30px;

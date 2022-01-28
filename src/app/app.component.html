@@ -9,6 +9,12 @@
 </head>
 <body>
   <nav class="navbar navbar-expand-md bg-light" *ngIf="isAuthenticated()">
+
+    <ul class="nav navbar-nav mr-auto">
+      <li style="justify-content:center; margin-right:10px; align-content:center; color:blue">
+        Hello {{userName}}
+      </li>
+    </ul>
   
   
     <ul class="navbar-nav ml-auto" >
@@ -20,9 +26,6 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" routerLink="/finance">My Finance</a>
-      </li>
-      <li class="nav-item">
-        Hello {{userName}}
       </li>
       <li class="nav-item">
         <button class="btn btn-danger" (click)="logout()">Logout</button>

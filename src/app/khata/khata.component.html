@@ -8,12 +8,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <h3 class="container">My Khata</h3>
-    <div class="heading-div | container">
+    
+    
+    <div class="heading-div ">
         
-
-        <button class="btn btn-primary"  data-toggle="modal" data-target="#exampleModalCenter" (click)="openContactForm(); wantsNewTransaction=false">Add New Contact</button>
-        <button class="btn btn-success" style="margin-left: 15px;" (click)="updateContacts(); wantsNewTransaction=true; wantsNewContact=false" >Add New Transaction</button>
+        <h3 class="container">My Khata</h3>
+        <button class="btn btn-primary float-right"  data-toggle="modal" data-target="#exampleModalCenter" (click)="openContactForm(); wantsNewTransaction=false" style="width: 200px; margin-right: 10px;">Add New Contact</button>
+        <button class="btn btn-success float-right" (click)="updateContacts(); wantsNewTransaction=true; wantsNewContact=false" style="width: 200px;margin-right: 10px;">Add New Transaction</button>
 
         <button class="btn btn-secondary" *ngIf="isTransSelected" (click)="toggleTransactionDetail(null)" style="margin-left: 15px;">Back</button>
     </div>
@@ -45,7 +46,7 @@
             </div>
 
             <input type="submit" class="btn btn-primary" value="Add Contact" id=submit-btn name="submit-btn"
-            style="margin-top:20px" (click)="addNewContact()">
+            style="margin-top:20px" (click)="addNewContact(); wantsNewContact=false">
             <input type="cancel" class="btn btn-danger" value="Cancel" id=cancel-btn name="cancel-btn"
             style="margin-top:20px; margin-left: 15px;" (click)="wantsNewContact=false">
         

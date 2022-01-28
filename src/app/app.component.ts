@@ -7,29 +7,37 @@ import { TransactionService } from './service/transaction.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
   title = 'my-money';
-  userName:string|null = ""
+  userName: string | null = '';
+  email: string | null = '';
 
-  constructor(private router: Router, private authService: AuthService, private transactionService: TransactionService){
-    this.setUserName()
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private transactionService: TransactionService
+  ){
+    this.setUserName();
+    
+  }
+
+  onUserAuthenticated(){
+    this.setUserName();
   }
 
   ngOnInit() {
-    // this.router.navigate(['/login']);
+    this.authService.userUpdated.subscribe(user => {this.setUserName();});
   }
 
-  getUserName():string | null{
-    if(this.isAuthenticated()){
+  getUserName(): string | null {
+    if (this.isAuthenticated()) {
       return this.authService.getUserName();
-    }
-    else
-    return "null"
+    } else return 'null';
   }
 
-  setUserName(){
+  setUserName() {
     this.userName = this.getUserName();
   }
 
@@ -37,11 +45,9 @@ export class AppComponent implements OnInit {
     return this.authService.isAuthenticated();
   }
 
-  logout(){
+  logout() {
     this.authService.logout();
     this.transactionService.logout();
     this.router.navigate(['/login']);
   }
-
-  
 }

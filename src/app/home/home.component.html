@@ -5,8 +5,26 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
 </head>
 <body>
-    
+    <div class="container">
+        <h3>Khata</h3>
+    </div>
+
+    <div class="container | khata-div">
+        <div class="top-trans">
+            <div class="top-trans-item" *ngFor="let item of topWillGet">
+                <p>{{item.name}}</p>
+                <p>{{item.msg}}</p>
+                <p>{{item.amount}}</p>
+            </div>
+            <div class="top-trans-item" *ngFor="let item of topWillGive">
+                <p>{{item.name}}</p>
+                <p>{{item.msg}}</p>
+                <p>{{item.amount}}</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
