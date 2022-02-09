@@ -24,7 +24,7 @@
 
     <div class="new-contact | container" *ngIf="wantsNewContact">
         <form [formGroup]="userEmails">
-        
+
             <label for="name">Full Name</label>
             <input type="text" class="form-control" placeholder="Enter your name" name="name" id="name" 
             [(ngModel)]="newContact.name" formControlName="name">
@@ -34,7 +34,7 @@
             </div>
         
             <label for="phone">Phone No.</label>
-            <input type="number" class="form-control" placeholder="Enter your mobile number" id="phone" name="phone" id="phone" [(ngModel)]="newContact.phoneNumber" formControlName="phoneNumber"
+            <input type="number" class="form-control" placeholder="Enter your mobile number" id="phone" name="phone" id="phone" [(ngModel)]="newContact.phoneNo" formControlName="phoneNumber"
                 maxlength="10">
         
             <label for="email-field">Email</label>
@@ -64,7 +64,7 @@
         <div *ngFor="let contact of allContacts | search: query" class="contact-list">
             <p>{{contact.name}}</p>
             <p>{{contact.email}}</p>
-            <p>{{contact.phoneNumber}}</p>
+            <p>{{contact.phoneNo}}</p>
             <button type="button" class="btn btn-success" (click)="selectContact(contact)">Select</button>
         </div>
     </div>
@@ -73,7 +73,7 @@
         <p>{{newContact.name}}</p>
         <input type="number" class="form-control" placeholder="Enter amount" [(ngModel)]="newTransaction.amount">
         <input type="text" class="form-control" placeholder="Enter Description" [(ngModel)]="newTransaction.msg">
-        <input type="date" class="form-control" placeholder="Select date" [(ngModel)]="newTransaction.date">
+        <input type="date" class="form-control" placeholder="Select date" [(ngModel)]="newTransaction.transDate">
 
         <input type="button" class="btn btn-danger" name="transaction_type" value="You will give" (click)="newTransaction.willGet=false; createTransaction();viewTransactionForm=false">
         <input type="button" class="btn btn-success" name="transaction_type" value="You will get" style="margin-left: 15px;" (click)="newTransaction.willGet=true; 
@@ -89,7 +89,7 @@
     </div>
     <div class="contact-list | container" *ngFor="let item of userTransactions" [hidden]="!isTransSelected" >
         <p>{{item.name}}</p>
-        <p>{{item.date}}</p>
+        <p>{{item.transDate}}</p>
         <p>{{item.msg}}
         <p style="float: right;">{{item.willGet ? "You will get" : "You will give" }}</p>
         <p style="float: right;">{{item.amount}}</p>

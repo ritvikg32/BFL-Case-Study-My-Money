@@ -10,6 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { KhataComponent } from './khata/khata.component';
 import { FinanceComponent } from './finance/finance.component';
 import { SearchPipe } from './pipe/search.pipe';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -19,15 +20,16 @@ import { SearchPipe } from './pipe/search.pipe';
     RegisterComponent,
     KhataComponent,
     FinanceComponent,
-    SearchPipe
+    SearchPipe,
   ],
   imports: [
     FormsModule,
     BrowserModule,
     AppRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

@@ -2,6 +2,11 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { Transaction, TransactionByGroup } from '../model/transaction';
 import {AuthService} from './auth.service';
 import {Contact} from '../model/user'
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+
+const BASE_URL = 'http://localhost:3000/';
 
 @Injectable({
   providedIn: 'root',
@@ -17,44 +22,52 @@ export class TransactionService {
   // actionCompleteListener: TransactionEventListener =
   //   {} as TransactionEventListener;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private http: HttpClient) {}
 
-  addNewContact(newContact: Contact) {
-    this.getContactsLocal();
+  addNewContact(newContact: Contact):Observable<any> {
+    // this.getContactsLocal();
 
-    this.allContacts.push(newContact);
+    // this.allContacts.push(newContact);
 
-    let finalContactsStr = JSON.stringify(this.allContacts);
+    // let finalContactsStr = JSON.stringify(this.allContacts);
 
-    localStorage.setItem(
-      this.authService.currentUser?.email! + '_contacts',
-      finalContactsStr
-    );
+    // localStorage.setItem(
+    //   this.authService.currentUser?.email! + '_contacts',
+    //   finalContactsStr
+    // );
 
     // this.actionCompleteListener.onContactSavedSuccess(
     //   200,
     //   'New Contact Added Successfully'
     // );
-  }
 
-  getTransactionsLocal() {
-    console.log(
-      'Getting transactions for email' + this.authService.currentUser?.email
+    return this.http.post(
+      BASE_URL + 'contact/' + this.authService.currentUser?.userId,
+      newContact,
+      { responseType: 'text' }
     );
-    let key = this.authService.currentUser?.email! + '_trans';
 
-    let transactionsStr = localStorage.getItem(key);
-    console.log('Transaction string is ' + transactionsStr);
-
-    if (transactionsStr !== null)
-      this.allTransactions = JSON.parse(transactionsStr);
+    
   }
 
-  getTransactionsGroup() {
-    this.transactionsGroupObj = this.allTransactions.reduce((acc: any, d) => {
+  // getTransactionsLocal() {
+  //   console.log(
+  //     'Getting transactions for email' + this.authService.currentUser?.email
+  //   );
+  //   let key = this.authService.currentUser?.email! + '_trans';
+
+  //   let transactionsStr = localStorage.getItem(key);
+  //   console.log('Transaction string is ' + transactionsStr);
+
+  //   if (transactionsStr !== null)
+  //     this.allTransactions = JSON.parse(transactionsStr);
+  // }
+
+  getTransactionsGroup(allTransactions:Transaction[]) {
+    this.transactionsGroupObj = allTransactions.reduce((acc: any, d) => {
       if (Object.keys(acc).includes(d.name)) return acc;
 
-      acc[d.name] = this.allTransactions.filter(
+      acc[d.name] = allTransactions.filter(
         (g: Transaction) => g.name === d.name
       );
       return acc;
@@ -99,21 +112,75 @@ export class TransactionService {
     return this.transactionGroup;
   }
 
-  storeTransaction(transaction: Transaction) {
-    this.getTransactionsLocal();
+  storeTransaction(transaction: Transaction):Observable<any> {
+    // this.getTransactionsLocal();
 
-    let key = this.authService.currentUser?.email! + '_trans';
+    // let key = this.authService.currentUser?.email! + '_trans';
 
-    this.allTransactions.push(transaction);
+    // this.allTransactions.push(transaction);
 
-    this.allTransEmitter.emit(this.allTransactions)
+    // this.allTransEmitter.emit(this.allTransactions)
 
-    var finalTransStr = JSON.stringify(this.allTransactions);
+    // var finalTransStr = JSON.stringify(this.allTransactions);
 
-    localStorage.setItem(key, finalTransStr);
-    console.log('Final Transaction: ' + finalTransStr);
+    // localStorage.setItem(key, finalTransStr);
+    // console.log('Final Transaction: ' + finalTransStr);
 
-    this.getTransactionsGroup()
+    // this.getTransactionsGroup()
+
+    console.log('Tranasacion before sending', JSON.stringify(transaction));
+
+    let dbWillGet = null
+
+    if(transaction.willGet)
+      dbWillGet = 1
+    else
+      dbWillGet = 0
+
+    console.log('Transaction name is ' + transaction.name);
+    
+
+    let customBody = {
+      "name" : transaction.name,
+      "email" : transaction.email, 
+      "transDate" : transaction.transDate,
+      "amount": transaction.amount,
+      "willGet": dbWillGet,
+      "msg": transaction.msg
+    }
+    
+    return this.http.post(BASE_URL + 'transaction/' + this.authService.currentUser?.userId,
+    customBody,
+    { responseType: 'text' }
+    )
+  }
+
+  updateTransaction(transaction:Transaction): Observable<any>{
+
+    let dbWillGet = null;
+
+    if (transaction.willGet) dbWillGet = 1;
+    else dbWillGet = 0;
+
+    let customBody = {
+      "transId": transaction.transId,
+      "name": transaction.name,
+      "email": transaction.email,
+      "transDate": transaction.transDate,
+      "amount": transaction.amount,
+      "willGet": dbWillGet,
+      "msg": transaction.msg,
+    };
+
+    return this.http.put(
+      BASE_URL + 'transaction/' + this.authService.currentUser?.userId,
+      customBody,
+      { responseType: 'text' }
+    );
+  }
+
+  deleteTransaction(transId: number): Observable<any>{
+    return this.http.delete(BASE_URL + 'transaction/' + transId, { responseType: 'text'})
   }
 
   overrideTransactions(value: any) {
@@ -130,14 +197,21 @@ export class TransactionService {
       this.authService.currentUser?.email! + '_contacts'
     );
     if (contactsStr !== null) this.allContacts = JSON.parse(contactsStr);
+
+
   }
 
-  getAllTransactions(): Transaction[] {
-    return this.allTransactions;
+  getAllTransactions(): Observable<any>{
+    return this.http.get(
+      BASE_URL + 'transactions/' + this.authService.currentUser?.userId,
+      { responseType: 'json' }
+    );
   }
 
-  getAllContacts(): Contact[] {
-    return this.allContacts;
+  getAllContacts(): Observable<any> {
+    return this.http.get(BASE_URL + 'contact/' + this.authService.currentUser?.userId,
+    { responseType: 'json' }
+    )
   }
 
   logout() {

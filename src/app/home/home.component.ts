@@ -12,20 +12,18 @@ export class HomeComponent implements OnInit {
   topWillGet: Transaction[] = [];
   topWillGive: Transaction[] = [];
 
-  constructor(private homeService: HomeService){
-
-  }
+  constructor(private homeService: HomeService){}
 
   ngOnInit(): void {
-    this.homeService.updateTopTrans()
+    // this.homeService.updateTopTrans()
 
     this.homeService.topWillGetUpdated.subscribe((topWillGet) => {
       this.topWillGet = topWillGet
-      console.log(this.topWillGet)
+      console.log('Top will get is' + this.topWillGet)
     });
     this.homeService.topWillGiveUpdated.subscribe((topWillGive) => {
       this.topWillGive = topWillGive;
-      console.log(this.topWillGive);
+      console.log('Top will give is' + this.topWillGive);
     });
   }
 

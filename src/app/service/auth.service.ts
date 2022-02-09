@@ -1,4 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import {
   ActivatedRouteSnapshot,
   CanActivate,
@@ -7,25 +9,33 @@ import {
 import { User } from '../model/user';
 import { Router } from '@angular/router';
 
+
+const BASE_URL = 'http://localhost:3000/';
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService implements CanActivate {
   user: User | null = null;
   currentUser: User | null = null;
+  newUser:User | null = null;
   userUpdated = new EventEmitter();
 
-  constructor(private router: Router) {}
+  
+
+  constructor(private router: Router, private http: HttpClient) {}
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean {
-    if (this.currentUser == null){
-      this.router.navigateByUrl('/login')
+    if (this.currentUser == null) {
+      this.router.navigateByUrl('/login');
     }
 
     return this.isAuthenticated();
   }
+
+  
 
   isAuthenticated(): boolean {
     return this.currentUser !== null;
@@ -36,24 +46,29 @@ export class AuthService implements CanActivate {
     email: string,
     password: string,
     phoneNumber: string
-  ): boolean {
-    if (this.userExists(email)) {
-      return false;
-    }
+  ): Observable<any> {
 
-    localStorage.setItem(email + '_auth', password);
+    this.newUser = new User(name, email, password, phoneNumber)
 
-    const userObj = new User(name, email, password, phoneNumber);
-    localStorage.setItem(email + '_data', JSON.stringify(userObj));
-    return true;
+    console.log('Phone number is ' + phoneNumber);
+    
+
+    let result = this.http.post(
+      BASE_URL + 'user',
+      this.newUser,
+      { responseType: 'json' }
+    );
+
+    return result
   }
 
-  // getUserCount():number | null{
+  submitUserAuthData(userId:number):Observable<any> {
+    this.newUser!.userId = userId
+    return this.http.post(BASE_URL + 'register', this.newUser, {responseType: 'json'})
+  }
 
-  //   const  count:string|null = localStorage.getItem('user_count')
+  
 
-  //   return +count!
-  // }
 
   userExists(email: string): boolean {
     const localPwd: string | null = localStorage.getItem(email + '_auth');
@@ -61,31 +76,46 @@ export class AuthService implements CanActivate {
     return localPwd != null && localPwd.length == 0;
   }
 
-  login(email: string, password: string): boolean {
-    if (this.userExists(email)) {
-      return false;
-    }
-    const userPwd = localStorage.getItem(email + '_auth');
-    if (password == userPwd) {
-      const userJSON = localStorage.getItem(email + '_data');
-      if (userJSON !== null) {
-        this.currentUser = JSON.parse(userJSON);
-        this.userUpdated.emit()
-        return true;
-      }
-    }
+  login(email: string, password: string): Observable<any> {
+    return this.http.post(
+      BASE_URL + 'login',
+      { email: email, password: password },
+      { responseType: 'json' }
+    );
+  }
 
-    return false;
+
+  getUserData(userId:number){
+
+    let result = this.http.get(BASE_URL + 'user/' + userId, {
+      responseType: 'json',
+    });
+
+    result.subscribe(
+      (data: any) => {
+        let userJSON = data[0]
+        this.currentUser = new User(
+          userJSON.NAME,
+          userJSON.EMAIL,
+          "",
+          userJSON.PHONENO
+        );
+        this.currentUser.userId = userId;
+        this.userUpdated.emit()
+        this.router.navigateByUrl('/home');
+      },
+      (err: any) => {
+        console.log('Error fetching user details...');
+      }
+    );
   }
 
   getUserName(): string | null {
-    if(this.isAuthenticated())
-      return this.currentUser!.name;
-    else
-    return null;
+    if (this.isAuthenticated()) return this.currentUser!.name;
+    else return null;
   }
 
-  logout(){
+  logout() {
     this.currentUser = null;
   }
 }

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import {AuthService} from '../service/auth.service'
+import { User } from '../model/user';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ export class LoginComponent implements OnInit {
   isPwdInvalid = false;
   email = ""
   password = ""
+  authFailed = false
 
 
   // loginBtn = document.getElementById('login-btn') as HTMLInputElement;
@@ -39,12 +41,19 @@ export class LoginComponent implements OnInit {
   }
 
   login(){
-    if(this.authService.login(this.email, this.password)){
-      this.router.navigateByUrl('/home')
-    }
-    else{
-      alert('Login Failed! Please check your credentials and try again.')
-    }
+    this.authFailed=false;
+    this.authService.login(this.email, this.password).subscribe(
+      (data: any) => {
+        console.log('login successful');
+        console.log('Login user id is ' + data.userId);
+        
+        this.authService.getUserData(data.userId)
+        
+      },
+      (err: any) => {
+        this.authFailed = true;
+      }
+    )
   }
 
   goToRegister(): void {

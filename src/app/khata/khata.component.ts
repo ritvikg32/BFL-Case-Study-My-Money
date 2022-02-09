@@ -22,9 +22,10 @@ export class KhataComponent implements OnInit {
   newContact: Contact = new Contact('', '', '');
   isTransSelected = false;
   newTransaction: Transaction = new Transaction(
+    null,
     this.newContact.name,
     this.newContact.email,
-    this.newContact.phoneNumber,
+    this.newContact.phoneNo,
     '',
     0,
     false,
@@ -70,13 +71,23 @@ export class KhataComponent implements OnInit {
   
 
   initTransactions() {
-    this.transactionService.getTransactionsLocal();
-    this.allTransactions = this.transactionService.getAllTransactions();
-    this.getTransactionsGroup();
+    // this.transactionService.getTransactionsLocal();
+    
+    this.transactionService.getAllTransactions().subscribe(transactions => {
+      console.log('Transactions received: ', transactions);
+      
+      this.allTransactions = transactions
+      this.getTransactionsGroup();
+    },
+    error => {
+      console.log('Error' + error);
+      
+    })
+    
   }
 
   getTransactionsGroup() {
-    this.transactionService.getTransactionsGroup();
+    this.transactionService.getTransactionsGroup(this.allTransactions);
     this.allTransactionsGroup =
       this.transactionService.getGroupedTransactions();
   }
@@ -97,7 +108,7 @@ export class KhataComponent implements OnInit {
     this.newContact = contact;
     this.newTransaction.name = contact.name;
     this.newTransaction.email = contact.email;
-    this.newTransaction.phoneNumber = contact.phoneNumber;
+    this.newTransaction.phoneNo = contact.phoneNo;
     this.viewTransactionForm = true;
     this.wantsNewContact = false;
     this.wantsNewTransaction = false;
@@ -114,13 +125,38 @@ export class KhataComponent implements OnInit {
 
     if (!this.viewTransEditForm) {
       // this.allTransactions.push(this.newTransaction);
-      this.transactionService.storeTransaction(this.newTransaction);
+
+
+      this.transactionService.storeTransaction(this.newTransaction).subscribe(
+        (result) => {
+          console.log('Transaction to be pushed' + JSON.stringify(this.newTransaction));
+          
+          this.allTransactions.push(this.newTransaction)
+          console.log(result)
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
       // this.initTransactions()
     } else {
       this.viewTransEditForm = false;
       this.viewTransactionForm = false;
       this.editTransaction(this.newTransaction);
-      this.transactionService.overrideTransactions(this.allTransactions);
+      console.log(
+        'Updated transaction is ' + JSON.stringify(this.newTransaction)
+      );
+      
+      this.transactionService.updateTransaction(this.newTransaction).subscribe(
+        response => {
+          console.log('Transaction updated successfully');
+          
+        },
+        err => {
+          console.log("Eror: " + err);
+          
+        }
+      );
     }
 
     console.log(
@@ -129,20 +165,33 @@ export class KhataComponent implements OnInit {
   }
 
   deleteTransaction(toDeleteTransaction: Transaction) {
-    let index = this.allTransactions.indexOf(toDeleteTransaction);
+    
 
-    if (index !== -1) {
-      this.allTransactions.splice(index, 1);
-    }
+    this.transactionService.deleteTransaction(toDeleteTransaction.transId!).subscribe(
+      response => {
+        console.log('Transaction deleted successfully');
+        let index = this.allTransactions.indexOf(toDeleteTransaction);
 
-    this.transactionService.overrideTransactions(this.allTransactions);
+        if (index !== -1) {
+          this.allTransactions.splice(index, 1);
+        }
+
+
+        console.log('Index of current element is ' + index);
+        
+        
+      },
+      err => {
+        console.log('Error' + err);
+      }
+    );
   }
 
   editTransaction(toEditTransaction: Transaction) {
     this.viewTransEditForm = true;
     this.newContact.name = toEditTransaction.name;
     this.newContact.email = toEditTransaction.email;
-    this.newContact.phoneNumber = toEditTransaction.phoneNumber;
+    this.newContact.phoneNo = toEditTransaction.phoneNo;
     this.newTransaction = toEditTransaction;
     this.viewTransactionForm = true;
   }
@@ -163,8 +212,19 @@ export class KhataComponent implements OnInit {
   });
 
   updateContacts() {
-    this.transactionService.getContactsLocal();
-    this.allContacts = this.transactionService.getAllContacts();
+    // this.transactionService.getContactsLocal();
+    // this.allContacts = this.transactionService.getAllContacts();
+
+    this.transactionService.getAllContacts().subscribe(
+      (contacts) => {
+        console.log('Updated contacts list: ', contacts);
+        
+        this.allContacts = contacts;
+      },
+      (err) => {
+        console.log('Error getting all contacts')
+      }
+    )
   }
 
   openContactForm() {
@@ -179,7 +239,16 @@ export class KhataComponent implements OnInit {
           this.userEmails.get('email')?.value,
           this.userEmails.get('password')?.value
         )
-      );
+      ).subscribe(
+        (data: any) => {
+          console.log('New contact added successfully');
+          
+          this.allContacts.push(this.newContact)
+        },
+        (err: any) => {
+          console.log('Cannot add new contact')
+        }
+      )
 
     console.log(JSON.stringify(this.newContact));
   }

@@ -41,6 +41,22 @@ export class RegisterComponent implements OnInit {
         this.email,
         this.password,
         this.phoneNo
+      ).subscribe(
+        (data: any) => {
+          console.log(data);
+          this.authService.submitUserAuthData(data.userId).subscribe(
+            (data: any) => {
+              return true;
+            },
+            (err: any) => {
+              console.log('Something went wrong');
+              
+            }
+          )
+        },
+        (err: any) => {
+          console.log('Something went wrong');
+        }
       )
     ) {
       this.goToLogin()
